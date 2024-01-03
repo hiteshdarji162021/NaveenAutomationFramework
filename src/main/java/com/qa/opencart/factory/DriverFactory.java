@@ -79,6 +79,7 @@ public class DriverFactory {
 		try {
 			if (envName == null) {
 				System.out.println("No environment Passed so By Default its taken QA environment QA Environment");
+				fi = new FileInputStream("./src/test/resources/config/qa.properties");
 			} else {
 				switch (envName.toLowerCase().trim()) {
 				case "dev":
