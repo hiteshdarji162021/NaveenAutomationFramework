@@ -34,7 +34,7 @@ public class MyAccountPage {
 	public String getAccountURL() {
 		String url = eleUtil.geturlcontaiAndFeath(AppConstants.DEFAULT_SHOT_TIME_OUT,
 				AppConstants.ACCOUNT_PAGE_URL_FRACTION_VALUE);
-		System.out.println("Account page Title is==>" + url);
+		System.out.println("Account page Title is=>" + url);
 		return url;
 	}
 
