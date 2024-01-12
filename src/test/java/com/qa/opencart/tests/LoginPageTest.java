@@ -26,7 +26,7 @@ public class LoginPageTest extends BaseTest {
 	}
 
 	@Severity(SeverityLevel.BLOCKER)
-	@Description(".....Getting URL of the page........")
+	@Description(".....Getting URL of the page......")
 	@Test(priority = 2)
 	public void loginPageURLTest() {
 		String actualURL = loginpage.getPageUrl();
