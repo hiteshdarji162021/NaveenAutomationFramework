@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 
 import org.aspectj.util.FileUtil;
@@ -13,7 +15,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.io.FileHandler;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.qa.opencart.exception.FrameworkException;
 
@@ -38,25 +40,69 @@ public class DriverFactory {
 		String browserName = prop.getProperty("browser").toLowerCase().trim();
 		System.out.println(browserName);
 		if (browserName.equalsIgnoreCase("chrome")) {
-			// driver = new ChromeDriver(optionManager.getChromeOptions());
-			tldriver.set(new ChromeDriver(optionManager.getChromeOptions()));
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				init_remoteDriver("chrome");
+			} else {
+				tldriver.set(new ChromeDriver(optionManager.getChromeOptions()));
+			}
+		}
 
-		} else if (browserName.equalsIgnoreCase("firefox")) {
-			// driver = new FirefoxDriver(optionManager.getFirefoxOptions());
-			tldriver.set(new FirefoxDriver(optionManager.getFirefoxOptions()));
+		else if (browserName.equalsIgnoreCase("firefox")) {
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {				
+				//run remote grid
+				init_remoteDriver("firefox");
+			} else {
+				//run on local
+				tldriver.set(new FirefoxDriver(optionManager.getFirefoxOptions()));
+			}
 
 		} else if (browserName.equalsIgnoreCase("edge")) {
-			// driver = new EdgeDriver(optionManager.getEdgeOptions());
-			tldriver.set(new EdgeDriver(optionManager.getEdgeOptions()));
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				init_remoteDriver("edge");
+			} else {
+				tldriver.set(new EdgeDriver(optionManager.getEdgeOptions()));
+			}
 
 		} else {
 			System.out.println("please enter valid browser name..." + browserName);
 			throw new FrameworkException("INVALID BROWSER NAME");
 		}
+
 		getdriver().manage().deleteAllCookies();
 		getdriver().manage().window().maximize();
 		getdriver().get(prop.getProperty("url"));
 		return getdriver();
+	}
+
+	private void init_remoteDriver(String bowser) {
+		
+		System.out.println("RUN TESTCASE ON REMOTE SIDE");
+		try {
+
+			switch (bowser.toLowerCase()) {
+			case "chrome":
+				tldriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("remoteurl")), optionManager.getChromeOptions()));
+				break;
+			case "firefox":
+				tldriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("remoteurl")), optionManager.getFirefoxOptions()));
+				break;
+			case "edge":
+				tldriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("remoteurl")), optionManager.getEdgeOptions()));
+				break;
+
+			default:
+				System.out.println("please enter valid browser name" + bowser);
+				throw new FrameworkException("NO REMOTE BROWSER EXCEPITON");
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
 	}
 
 	/**
